@@ -2,53 +2,125 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>HNIT AI Help Bot</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HNIT Multi-Phase Bot</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
+      background: #121212;
+      color: #fff;
       padding: 20px;
     }
     #chatbox {
       max-width: 600px;
       margin: auto;
-      background: white;
+      background: #1e1e1e;
+      border-radius: 10px;
       padding: 20px;
-      border-radius: 10px;
     }
-    .bubble {
+    .bot, .user {
       padding: 10px;
+      border-radius: 10px;
       margin: 10px 0;
-      border-radius: 10px;
     }
-    .user { background-color: #cce5ff; text-align: right; }
-    .bot { background-color: #e8e8e8; text-align: left; }
-    input, button {
-      padding: 10px;
-      font-size: 16px;
+    .bot {
+      background-color: #333;
+    }
+    .user {
+      background-color: #444;
+      text-align: right;
+    }
+    input {
       width: 80%;
-    }
-    #inputArea {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
     }
     button {
-      width: 20%;
+      padding: 10px;
+      border: none;
+      background: #ff4081;
+      color: #fff;
+      border-radius: 10px;
+    }
+    .suggestions button {
+      background: #555;
+      margin: 5px;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
   <div id="chatbox">
-    <h2>HNIT AI Help Bot</h2>
-    <div id="messages"></div>
-    <div id="inputArea">
-      <input type="text" id="userInput" placeholder="Ask your question..." />
-      <button onclick="sendMessage()">Send</button>
-    </div>
+    <div class="bot">Hi! Please type your issue below 👇</div>
   </div>
-  <script src="script.js"></script>
+  <div style="text-align:center; margin-top:10px;">
+    <input type="text" id="userInput" placeholder="Type your query..." />
+    <button onclick="handleUserInput()">Send</button>
+  </div>
+
+  <script>
+    let data = [];
+
+    // Load CSV
+    async function loadCSV() {
+      const res = await fetch('https://raw.githubusercontent.com/Rohit007r/hnit-bot/main/multi_phase_chatbot_3k.csv');
+      const text = await res.text();
+      const lines = text.split('\n').filter(Boolean);
+      data = lines.map(line => {
+        const [query, answer] = line.split(',');
+        return { query: query.toLowerCase().trim(), answer: answer?.trim() };
+      });
+    }
+
+    loadCSV();
+
+    function addMessage(text, sender = 'bot') {
+      const chatbox = document.getElementById('chatbox');
+      const div = document.createElement('div');
+      div.className = sender;
+      div.textContent = text;
+      chatbox.appendChild(div);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    function showSuggestions(matches) {
+      const chatbox = document.getElementById('chatbox');
+      const div = document.createElement('div');
+      div.className = 'bot suggestions';
+      div.innerHTML = '<strong>Did you mean:</strong><br>' + matches.map(m =>
+        `<button onclick="selectSuggestion('${m.query.replace(/'/g, "\\'")}')">${m.query}</button>`
+      ).join('');
+      chatbox.appendChild(div);
+    }
+
+    function selectSuggestion(query) {
+      addMessage(query, 'user');
+      const found = data.find(d => d.query === query.toLowerCase());
+      if (found) addMessage(found.answer, 'bot');
+      else addMessage("Sorry, I couldn't find an answer.", 'bot');
+    }
+
+    function handleUserInput() {
+      const input = document.getElementById('userInput');
+      const text = input.value.trim();
+      if (!text) return;
+      addMessage(text, 'user');
+      input.value = '';
+
+      const found = data.find(d => d.query === text.toLowerCase());
+      if (found) {
+        addMessage(found.answer, 'bot');
+      } else {
+        const matches = data.filter(d => d.query.includes(text.toLowerCase()));
+        if (matches.length > 0) {
+          showSuggestions(matches.slice(0, 5));
+        } else {
+          addMessage("Sorry, I couldn't find an answer for that.", 'bot');
+        }
+      }
+    }
+  </script>
 </body>
 </html>
