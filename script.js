@@ -1,10 +1,16 @@
 const API_KEY = "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";
 
+// Full chat history for context
+let chatHistory = [
+  { role: "system", content: "You are HNIT Help Bot, an assistant for tech and IT queries like VPN, laptop, internet, etc. Give simple and helpful replies." }
+];
+
 async function sendMessage() {
   const input = document.getElementById("userInput").value.trim();
   if (!input) return;
 
   showMessage(input, "user");
+  chatHistory.push({ role: "user", content: input });
   document.getElementById("userInput").value = "";
   showMessage("Thinking...", "bot", true);
 
@@ -16,28 +22,21 @@ async function sendMessage() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "google/gemma-7b-it",
-        messages: [
-          { role: "system", content: "You are HNIT Help Bot, an assistant for tech and IT queries." },
-          { role: "user", content: input }
-        ]
+        model: "google/gemma-7b-it", // You can try "openchat/openchat-7b" if needed
+        messages: chatHistory
       })
     });
-
-    if (!response.ok) {
-      const errMsg = `Error: ${response.status} ${response.statusText}`;
-      updateLastBotMessage(errMsg);
-      return;
-    }
 
     const data = await response.json();
     const reply = data?.choices?.[0]?.message?.content;
 
     if (reply && reply.trim() !== "") {
       updateLastBotMessage(reply);
+      chatHistory.push({ role: "assistant", content: reply }); // Add AI reply to history
     } else {
-      updateLastBotMessage("Sorry, I didn't quite understand that. Can you try asking differently?");
+      updateLastBotMessage("Sorry, I didn't quite understand that.");
     }
+
   } catch (error) {
     updateLastBotMessage("Error: " + error.message);
   }
