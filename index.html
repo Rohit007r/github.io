@@ -2,40 +2,65 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Public AI Chatbot</title>
+  <title>HNIT AI Bot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      max-width: 600px;
-      margin: auto;
+      background: #f4f4f4;
       padding: 20px;
     }
-
-    #chat {
-      border: 1px solid #ccc;
-      background: white;
-      padding: 10px;
-      height: 400px;
-      overflow-y: auto;
+    #chat-box {
+      max-width: 600px;
+      margin: auto;
     }
-
-    input, button {
+    #userInput {
+      width: 80%;
       padding: 10px;
-      width: 100%;
       font-size: 16px;
-      margin-top: 10px;
     }
-
-    .user { color: blue; }
-    .bot { color: green; }
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+    }
+    #response {
+      margin-top: 20px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
 <body>
-  <h2>Public AI Chatbot 🤖</h2>
-  <div id="chat"></div>
-  <input id="user" placeholder="Ask something..." />
-  <button onclick="askAI()">Send</button>
-  <script src="script.js"></script>
+  <div id="chat-box">
+    <h2>🧠 HNIT AI Bot</h2>
+    <input type="text" id="userInput" placeholder="Ask anything..." />
+    <button onclick="askAI()">Ask</button>
+    <div id="response"><strong>AI:</strong> <span id="answerText">Waiting for your question...</span></div>
+  </div>
+
+  <script>
+    async function askAI() {
+      const input = document.getElementById("userInput").value;
+      document.getElementById("answerText").innerText = "Thinking...";
+
+      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer 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"
+        },
+        body: JSON.stringify({
+          model: "mistralai/mistral-7b-instruct",
+          messages: [{ role: "user", content: input }],
+        }),
+      });
+
+      const data = await res.json();
+      const reply = data.choices?.[0]?.message?.content || "No response received.";
+      document.getElementById("answerText").innerText = reply;
+    }
+  </script>
 </body>
 </html>
