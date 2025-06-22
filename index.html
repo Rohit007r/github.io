@@ -72,18 +72,19 @@
   <script>
     let data = [];
 
-    // Load CSV
+    // Load CSV from GitHub
     async function loadCSV() {
-      const res = await fetch('https://raw.githubusercontent.com/Rohit007r/github.io/refs/heads/main/data.csv');
+      const res = await fetch('https://raw.githubusercontent.com/Rohit007r/github.io/refs/heads/main/multi_phase_chatbot_3k.csv');
       const text = await res.text();
       const lines = text.split('\n').filter(Boolean);
-      data = lines.map(line => {
-        const [query, answer] = line.split(',');
-        return {
-          query: query?.toLowerCase().trim(),
-          answer: answer?.trim()
-        };
+      data = lines.slice(1).map(line => {
+        const firstComma = line.indexOf(',');
+        if (firstComma === -1) return { query: '', answer: '' };
+        const query = line.slice(0, firstComma).toLowerCase().trim();
+        const answer = line.slice(firstComma + 1).trim();
+        return { query, answer };
       });
+      console.log("Loaded", data.length, "Q&A pairs.");
     }
 
     loadCSV();
@@ -130,7 +131,7 @@
       } else {
         const matches = data.filter(d => d.query.includes(text.toLowerCase()));
         if (matches.length > 0) {
-          showSuggestions(matches.slice(0, 5)); // Top 5 suggestions
+          showSuggestions(matches.slice(0, 5));
         } else {
           addMessage("Sorry, I couldn't find an answer for that.", 'bot');
         }
