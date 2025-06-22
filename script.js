@@ -1,16 +1,11 @@
-const API_KEY = "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"; // replace with your real key
+const API_KEY = "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";
 
 async function sendMessage() {
   const input = document.getElementById("userInput").value.trim();
   if (!input) return;
 
-  // Show user's message
   showMessage(input, "user");
-
-  // Clear input
   document.getElementById("userInput").value = "";
-
-  // Show loading
   showMessage("Thinking...", "bot", true);
 
   try {
@@ -21,7 +16,7 @@ async function sendMessage() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "google/gemma-7b-it", // free and good model
+        model: "google/gemma-7b-it",
         messages: [
           { role: "system", content: "You are HNIT Help Bot, an assistant for tech and IT queries." },
           { role: "user", content: input }
@@ -29,9 +24,20 @@ async function sendMessage() {
       })
     });
 
+    if (!response.ok) {
+      const errMsg = `Error: ${response.status} ${response.statusText}`;
+      updateLastBotMessage(errMsg);
+      return;
+    }
+
     const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || "Sorry, I couldn't understand that.";
-    updateLastBotMessage(reply);
+    const reply = data?.choices?.[0]?.message?.content;
+
+    if (reply && reply.trim() !== "") {
+      updateLastBotMessage(reply);
+    } else {
+      updateLastBotMessage("Sorry, I didn't quite understand that. Can you try asking differently?");
+    }
   } catch (error) {
     updateLastBotMessage("Error: " + error.message);
   }
