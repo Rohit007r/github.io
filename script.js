@@ -1,36 +1,54 @@
-async function askAI() {
-  const userInput = document.getElementById("user").value;
-  const chat = document.getElementById("chat");
+const API_KEY = "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"; // replace with your real key
 
-  if (!userInput.trim()) return;
+async function sendMessage() {
+  const input = document.getElementById("userInput").value.trim();
+  if (!input) return;
 
-  // Show user input
-  chat.innerHTML += `<p class="user"><b>You:</b> ${userInput}</p>`;
+  // Show user's message
+  showMessage(input, "user");
+
+  // Clear input
+  document.getElementById("userInput").value = "";
 
   // Show loading
-  chat.innerHTML += `<p class="bot" id="loading"><b>Bot:</b> Thinking...</p>`;
-  chat.scrollTop = chat.scrollHeight;
+  showMessage("Thinking...", "bot", true);
 
   try {
-    const response = await fetch("https://hf.space/embed/mistralai/Mistral-7B-Instruct-v0.1/+/api/predict/", {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
+        "Authorization": `Bearer ${API_KEY}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        data: [userInput]
+        model: "google/gemma-7b-it", // free and good model
+        messages: [
+          { role: "system", content: "You are HNIT Help Bot, an assistant for tech and IT queries." },
+          { role: "user", content: input }
+        ]
       })
     });
 
     const data = await response.json();
-    const botReply = data.data[0] || "Sorry, I couldn't get a response.";
-
-    document.getElementById("loading").remove();
-    chat.innerHTML += `<p class="bot"><b>Bot:</b> ${botReply}</p>`;
-    document.getElementById("user").value = "";
-    chat.scrollTop = chat.scrollHeight;
+    const reply = data.choices?.[0]?.message?.content || "Sorry, I couldn't understand that.";
+    updateLastBotMessage(reply);
   } catch (error) {
-    document.getElementById("loading").remove();
-    chat.innerHTML += `<p class="bot"><b>Bot:</b> Error connecting to AI.</p>`;
+    updateLastBotMessage("Error: " + error.message);
+  }
+}
+
+function showMessage(text, sender, isTemporary = false) {
+  const messageElem = document.createElement("div");
+  messageElem.className = "bubble " + sender;
+  messageElem.textContent = text;
+  if (isTemporary) messageElem.id = "temp";
+  document.getElementById("messages").appendChild(messageElem);
+}
+
+function updateLastBotMessage(text) {
+  const temp = document.getElementById("temp");
+  if (temp) {
+    temp.textContent = text;
+    temp.id = "";
   }
 }
