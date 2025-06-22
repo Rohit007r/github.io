@@ -2,69 +2,49 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>HNIT AI Bot</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HNIT AI Help Bot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      background-color: #f5f5f5;
       padding: 20px;
     }
-    #chat-box {
+    #chatbox {
+      width: 100%;
       max-width: 600px;
       margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
     }
-    #userInput {
-      width: 80%;
+    .bubble {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 10px;
+    }
+    .user { background-color: #d1e7ff; text-align: right; }
+    .bot { background-color: #f0f0f0; text-align: left; }
+    input, button {
       padding: 10px;
       font-size: 16px;
     }
-    button {
-      padding: 10px 15px;
-      font-size: 16px;
-    }
-    #response {
-      margin-top: 20px;
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    #inputArea {
+      display: flex;
+      gap: 10px;
     }
   </style>
 </head>
 <body>
-  <div id="chat-box">
-    <h2>🧠 HNIT AI Bot</h2>
-    <input type="text" id="userInput" placeholder="Ask anything..." />
-    <button onclick="askAI()">Ask</button>
-    <div id="response"><strong>AI:</strong> <span id="answerText">Waiting for your question...</span></div>
+  <div id="chatbox">
+    <h2>HNIT AI Help Bot</h2>
+    <div id="messages"></div>
+    <div id="inputArea">
+      <input type="text" id="userInput" placeholder="Ask your question..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
   </div>
 
-  <script>
-    async function askAI() {
-      const input = document.getElementById("userInput").value;
-      document.getElementById("answerText").innerText = "Thinking...";
-
-      try {
-        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer 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"
-          },
-          body: JSON.stringify({
-            model: "openai/gpt-3.5-turbo",
-            messages: [{ role: "user", content: input }],
-          }),
-        });
-
-        const data = await res.json();
-        const reply = data.choices?.[0]?.message?.content || "No response received.";
-        document.getElementById("answerText").innerText = reply;
-      } catch (err) {
-        document.getElementById("answerText").innerText = "Error: " + err.message;
-      }
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
