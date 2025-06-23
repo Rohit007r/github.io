@@ -2,136 +2,80 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Device Compliance Checker</title>
+  <title>Data Collector Form</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #eef2f3;
-      padding: 20px;
-    }
-
-    h1 {
+      background: #f8f9fa;
+      padding: 40px;
       text-align: center;
-      color: #2c3e50;
     }
-
     form {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      max-width: 600px;
-      margin: auto;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      display: inline-block;
     }
-
-    label {
+    input {
       display: block;
-      margin: 12px 0 6px;
-      font-weight: bold;
-    }
-
-    input[type="text"] {
-      width: 100%;
+      margin: 10px auto;
       padding: 10px;
-      margin-bottom: 12px;
-      border-radius: 6px;
+      width: 250px;
+      font-size: 1rem;
       border: 1px solid #ccc;
+      border-radius: 5px;
     }
-
-    .checkbox-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 15px;
-    }
-
-    .checkbox-group label {
-      font-weight: normal;
-    }
-
     button {
-      background: #3498db;
-      color: white;
+      padding: 10px 25px;
+      background-color: #007bff;
       border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
+      color: white;
+      font-size: 1rem;
+      border-radius: 5px;
       cursor: pointer;
-      margin-right: 10px;
     }
-
-    .message {
-      text-align: center;
+    #message {
       margin-top: 20px;
       font-weight: bold;
     }
-
-    .success { color: green; }
-    .error { color: red; }
   </style>
 </head>
 <body>
-  <h1>Device Compliance Checker</h1>
 
-  <form id="complianceForm">
-    <label>Employee Name:</label>
-    <input type="text" id="employee" required>
-
-    <label>Device ID / Hostname:</label>
-    <input type="text" id="deviceId" required>
-
-    <label>OS Version:</label>
-    <input type="text" id="osVersion" required>
-
-    <div class="checkbox-group">
-      <label><input type="checkbox" id="antivirus"> Antivirus Installed</label>
-      <label><input type="checkbox" id="updates"> Windows Update Enabled</label>
-      <label><input type="checkbox" id="bitlocker"> BitLocker Enabled</label>
-    </div>
-
+  <h2>Submit Your Details</h2>
+  <form id="dataForm">
+    <input type="text" name="name" placeholder="Enter your name" required />
+    <input type="tel" name="mobile" placeholder="Enter your mobile number" required />
     <button type="submit">Submit</button>
-    <button type="reset">Reset</button>
+    <div id="message"></div>
   </form>
 
-  <div class="message" id="messageBox"></div>
-
   <script>
-    const form = document.getElementById("complianceForm");
-    const messageBox = document.getElementById("messageBox");
-
-    form.addEventListener("submit", function(e) {
+    const form = document.getElementById('dataForm');
+    form.addEventListener('submit', async function(e) {
       e.preventDefault();
+      const formData = new FormData(form);
+      const params = new URLSearchParams(formData);
 
-      const data = {
-        employee: document.getElementById("employee").value.trim(),
-        deviceId: document.getElementById("deviceId").value.trim(),
-        osVersion: document.getElementById("osVersion").value.trim(),
-        antivirus: document.getElementById("antivirus").checked,
-        updates: document.getElementById("updates").checked,
-        bitlocker: document.getElementById("bitlocker").checked,
-      };
+      const scriptURL = 'https://script.google.com/macros/s/AKfycbzbrIgZPmfr1XLvKA_ZmXPmxaRWNFZST-45r8GxYID4znCo3cy0oRQ1BSMg4Wmzs6IS/exec';
 
-      data.status = (data.antivirus && data.updates && data.bitlocker) ? "Compliant" : "Not Compliant";
+      try {
+        const response = await fetch(scriptURL, {
+          method: 'POST',
+          body: params
+        });
 
-      fetch("https://script.google.com/macros/s/AKfycbx3n_9ttsvfz4HwL_l7Zt1BSVYf0JCu59KeZ53m5V0SCl-egcHvUei1msTPrAMFIPrJ/exec", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-      .then(res => res.text())
-      .then(msg => {
-        messageBox.innerText = "✅ Data saved successfully!";
-        messageBox.className = "message success";
+        const result = await response.text();
+        document.getElementById('message').textContent = result;
+        document.getElementById('message').style.color = 'green';
         form.reset();
-      })
-      .catch(err => {
-        messageBox.innerText = "❌ Error saving data!";
-        messageBox.className = "message error";
-        console.error(err);
-      });
+      } catch (error) {
+        document.getElementById('message').textContent = '❌ Error submitting form.';
+        document.getElementById('message').style.color = 'red';
+      }
     });
   </script>
+
 </body>
 </html>
