@@ -2,188 +2,81 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Help for Helpless People</title>
+  <title>Data Collector Form</title>
   <style>
     body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #fff9f0;
-      color: #333;
-    }
-
-    header {
-      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-        url('https://images.unsplash.com/photo-1597764699513-24d7fafe8a67?auto=format&fit=crop&w=1600&q=80') no-repeat center center/cover;
-      height: 100vh;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      padding: 40px;
       text-align: center;
-      flex-direction: column;
-      padding: 0 20px;
     }
-
-    header h1 {
-      font-size: 3.5rem;
-      margin: 0;
-      color: #f9d342;
-      text-shadow: 2px 2px #000;
-    }
-
-    header p {
-      font-size: 1.3rem;
-      max-width: 700px;
-      text-shadow: 1px 1px #000;
-    }
-
-    .btn {
-      background-color: #e63946;
-      color: white;
-      padding: 14px 28px;
-      border: none;
-      border-radius: 30px;
-      font-size: 1.1rem;
-      margin-top: 25px;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background 0.3s;
-    }
-
-    .btn:hover {
-      background-color: #d62828;
-    }
-
-    section {
-      padding: 60px 20px;
-      max-width: 1100px;
-      margin: auto;
-    }
-
-    h2 {
-      text-align: center;
-      color: #d62828;
-      font-size: 2.2rem;
-      margin-bottom: 30px;
-    }
-
-    .highlight {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 30px;
-      justify-content: center;
-    }
-
-    .highlight-box {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      width: 300px;
-      transition: transform 0.3s ease;
-    }
-
-    .highlight-box:hover {
-      transform: translateY(-5px);
-    }
-
-    .highlight-box img {
-      width: 100%;
+    form {
+      background: white;
+      padding: 25px;
       border-radius: 10px;
-      margin-bottom: 15px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      display: inline-block;
     }
-
-    .highlight-box h3 {
-      color: #f77f00;
-      margin-bottom: 10px;
-    }
-
-    #donate {
-      background: url('https://rohit007r.github.io/assets/donate-now-bg.png') no-repeat center center/cover;
-      color: white;
-      padding: 80px 20px;
-      text-align: center;
-    }
-
-    #donate h2 {
-      color: #ffcc00;
-    }
-
-    #donate p {
-      max-width: 600px;
-      margin: auto;
-      margin-bottom: 30px;
-      font-size: 1.1rem;
-    }
-
-    .qr-section img {
-      border: 4px solid #fff;
+    input {
+      display: block;
+      margin: 10px auto;
       padding: 10px;
-      border-radius: 10px;
-      background-color: rgba(0,0,0,0.5);
+      width: 250px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
     }
-
-    footer {
-      background-color: #222;
-      color: #ccc;
-      text-align: center;
-      padding: 20px;
-      font-size: 0.9rem;
+    button {
+      padding: 10px 25px;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
     }
-
-    @media (max-width: 768px) {
-      header h1 {
-        font-size: 2.5rem;
-      }
-      .highlight {
-        flex-direction: column;
-        align-items: center;
-      }
+    #message {
+      margin-top: 20px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>Help for Helpless People</h1>
-  <p>Your small act of kindness can bring light to someone’s dark world. Be the reason someone smiles today.</p>
-  <a href="#donate" class="btn">Donate Now</a>
-</header>
+  <h2>Submit Your Details</h2>
+  <form id="dataForm">
+    <input type="text" name="name" placeholder="Enter your name" required />
+    <input type="tel" name="mobile" placeholder="Enter your mobile number" required />
+    <button type="submit">Submit</button>
+    <div id="message"></div>
+  </form>
 
-<section>
-  <h2>Our Mission</h2>
-  <div class="highlight">
-    <div class="highlight-box">
-      <img src="https://images.unsplash.com/photo-1580674283443-520fae337da3?auto=format&fit=crop&w=800&q=80" alt="Feeding the Poor">
-      <h3>Feed the Hungry</h3>
-      <p>We serve thousands of meals daily to people who are struggling for a simple bite.</p>
-    </div>
-    <div class="highlight-box">
-      <img src="https://images.unsplash.com/photo-1584467735871-4aa1cd3f1125?auto=format&fit=crop&w=800&q=80" alt="Education">
-      <h3>Education for Children</h3>
-      <p>Your donations support schools, books, and uniforms for underprivileged children.</p>
-    </div>
-    <div class="highlight-box">
-      <img src="https://images.unsplash.com/photo-1609916596054-18dc5a62a02e?auto=format&fit=crop&w=800&q=80" alt="Medical">
-      <h3>Emergency Care</h3>
-      <p>Free medical camps and aid for those who can’t afford critical treatment.</p>
-    </div>
-  </div>
-</section>
+  <script>
+    const form = document.getElementById('dataForm');
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const params = new URLSearchParams(formData);
 
-<section id="donate">
-  <h2>Make a Donation</h2>
-  <p>Support a cause that truly matters. Scan the QR below or contact us for UPI / bank transfer options.</p>
-  <div class="qr-section">
-    <img src="https://via.placeholder.com/200?text=QR+Code" alt="Donate QR Code" width="200" height="200">
-    <p style="margin-top:10px; color: #ffcc00;">Scan to Donate</p>
-  </div>
-</section>
+      const scriptURL = 'https://script.google.com/macros/s/AKfycbzbrIgZPmfr1XLvKA_ZmXPmxaRWNFZST-45r8GxYID4znCo3cy0oRQ1BSMg4Wmzs6IS/exec';
 
-<footer>
-  &copy; 2025 Help for Helpless People | Built with ❤️ for a better tomorrow
-</footer>
+      try {
+        const response = await fetch(scriptURL, {
+          method: 'POST',
+          body: params
+        });
+
+        const result = await response.text();
+        document.getElementById('message').textContent = result;
+        document.getElementById('message').style.color = 'green';
+        form.reset();
+      } catch (error) {
+        document.getElementById('message').textContent = '❌ Error submitting form.';
+        document.getElementById('message').style.color = 'red';
+      }
+    });
+  </script>
 
 </body>
 </html>
+
