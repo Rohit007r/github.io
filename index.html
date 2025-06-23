@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f2f2f2;
+      background: #eef2f3;
       padding: 20px;
     }
 
@@ -19,31 +19,31 @@
     form {
       background: #fff;
       padding: 20px;
-      border-radius: 10px;
+      border-radius: 12px;
       max-width: 600px;
       margin: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
     }
 
     label {
       display: block;
-      margin: 10px 0 5px;
+      margin: 12px 0 6px;
       font-weight: bold;
     }
 
-    input[type="text"], select {
+    input[type="text"] {
       width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 12px;
+      border-radius: 6px;
       border: 1px solid #ccc;
     }
 
     .checkbox-group {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 10px;
+      gap: 12px;
+      margin-bottom: 15px;
     }
 
     .checkbox-group label {
@@ -52,10 +52,10 @@
 
     button {
       background: #3498db;
-      color: #fff;
+      color: white;
       border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
+      padding: 10px 16px;
+      border-radius: 6px;
       cursor: pointer;
       margin-right: 10px;
     }
@@ -65,6 +65,9 @@
       margin-top: 20px;
       font-weight: bold;
     }
+
+    .success { color: green; }
+    .error { color: red; }
   </style>
 </head>
 <body>
@@ -120,12 +123,12 @@
       .then(res => res.text())
       .then(msg => {
         messageBox.innerText = "✅ Data saved successfully!";
-        messageBox.style.color = "green";
+        messageBox.className = "message success";
         form.reset();
       })
       .catch(err => {
-        messageBox.innerText = "❌ Error saving data.";
-        messageBox.style.color = "red";
+        messageBox.innerText = "❌ Error saving data!";
+        messageBox.className = "message error";
         console.error(err);
       });
     });
