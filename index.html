@@ -57,34 +57,13 @@
       padding: 10px 15px;
       border-radius: 5px;
       cursor: pointer;
+      margin-right: 10px;
     }
 
-    table {
-      margin-top: 30px;
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-    }
-
-    th, td {
-      padding: 10px;
-      border: 1px solid #ddd;
+    .message {
       text-align: center;
-    }
-
-    th {
-      background: #3498db;
-      color: white;
-    }
-
-    .compliant {
-      background: #2ecc71;
-      color: white;
-    }
-
-    .non-compliant {
-      background: #e74c3c;
-      color: white;
+      margin-top: 20px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -108,99 +87,48 @@
     </div>
 
     <button type="submit">Submit</button>
-    <button type="button" onclick="exportCSV()">Export CSV</button>
-    <button type="button" onclick="clearData()">Clear All</button>
+    <button type="reset">Reset</button>
   </form>
 
-  <table id="complianceTable">
-    <thead>
-      <tr>
-        <th>Employee</th>
-        <th>Device ID</th>
-        <th>OS Version</th>
-        <th>Antivirus</th>
-        <th>Updates</th>
-        <th>BitLocker</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <div class="message" id="messageBox"></div>
 
   <script>
     const form = document.getElementById("complianceForm");
-    const tableBody = document.querySelector("#complianceTable tbody");
-
-    let entries = JSON.parse(localStorage.getItem("complianceData") || "[]");
-    renderTable();
+    const messageBox = document.getElementById("messageBox");
 
     form.addEventListener("submit", function(e) {
       e.preventDefault();
 
-      const employee = document.getElementById("employee").value.trim();
-      const deviceId = document.getElementById("deviceId").value.trim();
-      const osVersion = document.getElementById("osVersion").value.trim();
-      const antivirus = document.getElementById("antivirus").checked;
-      const updates = document.getElementById("updates").checked;
-      const bitlocker = document.getElementById("bitlocker").checked;
-
-      const status = antivirus && updates && bitlocker ? "Compliant" : "Not Compliant";
-
-      const newRow = {
-        employee,
-        deviceId,
-        osVersion,
-        antivirus,
-        updates,
-        bitlocker,
-        status
+      const data = {
+        employee: document.getElementById("employee").value.trim(),
+        deviceId: document.getElementById("deviceId").value.trim(),
+        osVersion: document.getElementById("osVersion").value.trim(),
+        antivirus: document.getElementById("antivirus").checked,
+        updates: document.getElementById("updates").checked,
+        bitlocker: document.getElementById("bitlocker").checked,
       };
 
-      entries.push(newRow);
-      localStorage.setItem("complianceData", JSON.stringify(entries));
-      renderTable();
-      form.reset();
+      data.status = (data.antivirus && data.updates && data.bitlocker) ? "Compliant" : "Not Compliant";
+
+      fetch("https://script.google.com/macros/s/AKfycbx3n_9ttsvfz4HwL_l7Zt1BSVYf0JCu59KeZ53m5V0SCl-egcHvUei1msTPrAMFIPrJ/exec", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(res => res.text())
+      .then(msg => {
+        messageBox.innerText = "✅ Data saved successfully!";
+        messageBox.style.color = "green";
+        form.reset();
+      })
+      .catch(err => {
+        messageBox.innerText = "❌ Error saving data.";
+        messageBox.style.color = "red";
+        console.error(err);
+      });
     });
-
-    function renderTable() {
-      tableBody.innerHTML = "";
-      entries.forEach(entry => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${entry.employee}</td>
-          <td>${entry.deviceId}</td>
-          <td>${entry.osVersion}</td>
-          <td>${entry.antivirus ? "✅" : "❌"}</td>
-          <td>${entry.updates ? "✅" : "❌"}</td>
-          <td>${entry.bitlocker ? "✅" : "❌"}</td>
-          <td class="${entry.status === "Compliant" ? "compliant" : "non-compliant"}">${entry.status}</td>
-        `;
-        tableBody.appendChild(row);
-      });
-    }
-
-    function exportCSV() {
-      let csvContent = "data:text/csv;charset=utf-8,";
-      csvContent += "Employee,Device ID,OS Version,Antivirus,Updates,BitLocker,Status\n";
-      entries.forEach(e => {
-        csvContent += `${e.employee},${e.deviceId},${e.osVersion},${e.antivirus ? "Yes" : "No"},${e.updates ? "Yes" : "No"},${e.bitlocker ? "Yes" : "No"},${e.status}\n`;
-      });
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "compliance_data.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    function clearData() {
-      if (confirm("Are you sure you want to clear all data?")) {
-        entries = [];
-        localStorage.removeItem("complianceData");
-        renderTable();
-      }
-    }
   </script>
 </body>
 </html>
