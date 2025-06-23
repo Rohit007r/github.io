@@ -2,91 +2,205 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>HNIT Help Bot</title>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Device Compliance Checker</title>
   <style>
-    body { font-family: Arial; background: #121212; color: #fff; padding: 20px; }
-    #chatbox { max-width:600px; margin:auto; background:#1e1e1e; border-radius:10px; padding:20px; overflow-y:auto; max-height:80vh; }
-    .bot, .user { padding:10px; border-radius:10px; margin:10px 0; }
-    .bot { background:#2c2c2c; text-align:left; }
-    .user { background:#444; text-align:right; }
-    input { width:70%; padding:10px; border-radius:10px; border:none; outline:none; }
-    button { padding:10px 15px; background:#ff4081; color:#fff; border:none; border-radius:10px; margin-left:5px; cursor:pointer; }
-    .suggestions button { background:#444; color:#fff; margin:5px 5px 0 0; border:none; border-radius:8px; padding:6px 10px; cursor:pointer; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+
+    input[type="text"], select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .checkbox-group label {
+      font-weight: normal;
+    }
+
+    button {
+      background: #3498db;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    table {
+      margin-top: 30px;
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background: #3498db;
+      color: white;
+    }
+
+    .compliant {
+      background: #2ecc71;
+      color: white;
+    }
+
+    .non-compliant {
+      background: #e74c3c;
+      color: white;
+    }
   </style>
 </head>
 <body>
-  <div id="chatbox"><div class="bot">Hi! Please type your issue 👇</div></div>
-  <div style="text-align:center; margin-top:10px;">
-    <input type="text" id="userInput" placeholder="Type your query..." />
-    <button onclick="handleUserInput()">Send</button>
-  </div>
+  <h1>Device Compliance Checker</h1>
+
+  <form id="complianceForm">
+    <label>Employee Name:</label>
+    <input type="text" id="employee" required>
+
+    <label>Device ID / Hostname:</label>
+    <input type="text" id="deviceId" required>
+
+    <label>OS Version:</label>
+    <input type="text" id="osVersion" required>
+
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="antivirus"> Antivirus Installed</label>
+      <label><input type="checkbox" id="updates"> Windows Update Enabled</label>
+      <label><input type="checkbox" id="bitlocker"> BitLocker Enabled</label>
+    </div>
+
+    <button type="submit">Submit</button>
+    <button type="button" onclick="exportCSV()">Export CSV</button>
+    <button type="button" onclick="clearData()">Clear All</button>
+  </form>
+
+  <table id="complianceTable">
+    <thead>
+      <tr>
+        <th>Employee</th>
+        <th>Device ID</th>
+        <th>OS Version</th>
+        <th>Antivirus</th>
+        <th>Updates</th>
+        <th>BitLocker</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
   <script>
-    let data = [];
+    const form = document.getElementById("complianceForm");
+    const tableBody = document.querySelector("#complianceTable tbody");
 
-    async function loadCSV() {
-      const url = 'https://raw.githubusercontent.com/Rohit007r/github.io/main/data.csv';
-      console.log('🔁 Fetching CSV:', url);
-      try {
-        const res = await fetch(url);
-        console.log('✅ Fetch status:', res.status);
-        const text = await res.text();
-        console.log('📄 CSV snippet:', text.slice(0,200));
+    let entries = JSON.parse(localStorage.getItem("complianceData") || "[]");
+    renderTable();
 
-        const parsed = Papa.parse(text, { header:true, skipEmptyLines:true });
-        console.log('📊 Parsed:', parsed);
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
 
-        data = parsed.data.map(e => ({
-          query: (e.query||'').toLowerCase().trim(),
-          answer: (e.answer||'').trim()
-        }));
-        console.log('✅ Loaded entries:', data.length);
-      } catch (err) {
-        console.error('❌ CSV load error:', err);
+      const employee = document.getElementById("employee").value.trim();
+      const deviceId = document.getElementById("deviceId").value.trim();
+      const osVersion = document.getElementById("osVersion").value.trim();
+      const antivirus = document.getElementById("antivirus").checked;
+      const updates = document.getElementById("updates").checked;
+      const bitlocker = document.getElementById("bitlocker").checked;
+
+      const status = antivirus && updates && bitlocker ? "Compliant" : "Not Compliant";
+
+      const newRow = {
+        employee,
+        deviceId,
+        osVersion,
+        antivirus,
+        updates,
+        bitlocker,
+        status
+      };
+
+      entries.push(newRow);
+      localStorage.setItem("complianceData", JSON.stringify(entries));
+      renderTable();
+      form.reset();
+    });
+
+    function renderTable() {
+      tableBody.innerHTML = "";
+      entries.forEach(entry => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${entry.employee}</td>
+          <td>${entry.deviceId}</td>
+          <td>${entry.osVersion}</td>
+          <td>${entry.antivirus ? "✅" : "❌"}</td>
+          <td>${entry.updates ? "✅" : "❌"}</td>
+          <td>${entry.bitlocker ? "✅" : "❌"}</td>
+          <td class="${entry.status === "Compliant" ? "compliant" : "non-compliant"}">${entry.status}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function exportCSV() {
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "Employee,Device ID,OS Version,Antivirus,Updates,BitLocker,Status\n";
+      entries.forEach(e => {
+        csvContent += `${e.employee},${e.deviceId},${e.osVersion},${e.antivirus ? "Yes" : "No"},${e.updates ? "Yes" : "No"},${e.bitlocker ? "Yes" : "No"},${e.status}\n`;
+      });
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "compliance_data.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function clearData() {
+      if (confirm("Are you sure you want to clear all data?")) {
+        entries = [];
+        localStorage.removeItem("complianceData");
+        renderTable();
       }
     }
-
-    function addMessage(text, sender='bot') {
-      const chatbox = document.getElementById('chatbox');
-      const div = document.createElement('div');
-      div.className = sender;
-      div.textContent = text;
-      chatbox.appendChild(div);
-      chatbox.scrollTop = chatbox.scrollHeight;
-    }
-
-    function showSuggestions(matches) {
-      const chatbox = document.getElementById('chatbox');
-      const div = document.createElement('div');
-      div.className = 'bot suggestions';
-      div.innerHTML = '<strong>Did you mean:</strong><br>' +
-        matches.map(m => `<button onclick="selectSuggestion('${m.query.replace(/'/g,"\\'")}')">${m.query}</button>`).join('');
-      chatbox.appendChild(div);
-    }
-
-    function selectSuggestion(q) {
-      addMessage(q, 'user');
-      const found = data.find(d => d.query===q);
-      addMessage(found?.answer || "Sorry, no answer found.", 'bot');
-    }
-
-    function handleUserInput() {
-      const inp = document.getElementById('userInput');
-      const t = inp.value.trim().toLowerCase();
-      if (!t) return;
-      addMessage(t, 'user');
-      inp.value = '';
-      const exact = data.find(d => d.query===t);
-      if (exact) {
-        addMessage(exact.answer, 'bot');
-      } else {
-        const suggestions = data.filter(d => d.query.includes(t)).slice(0,5);
-        if (suggestions.length) showSuggestions(suggestions);
-        else addMessage("Sorry, I couldn't find an answer for that.", 'bot');
-      }
-    }
-
-    loadCSV();
   </script>
 </body>
 </html>
