@@ -8,11 +8,12 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f9f9f9;
+      background-color: #fff9f0;
       color: #333;
     }
     header {
-      background: url('https://images.unsplash.com/photo-1603575448374-745b93aa3470') no-repeat center center/cover;
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+        url('https://images.unsplash.com/photo-1597764699513-24d7fafe8a67?auto=format&fit=crop&w=1600&q=80') no-repeat center center/cover;
       height: 100vh;
       color: white;
       display: flex;
@@ -23,59 +24,91 @@
       padding: 0 20px;
     }
     header h1 {
-      font-size: 3rem;
+      font-size: 3.5rem;
       margin: 0;
+      color: #f9d342;
+      text-shadow: 2px 2px #000;
     }
     header p {
-      font-size: 1.2rem;
-      max-width: 600px;
+      font-size: 1.3rem;
+      max-width: 700px;
+      text-shadow: 1px 1px #000;
     }
     .btn {
       background-color: #e63946;
       color: white;
-      padding: 12px 25px;
+      padding: 14px 28px;
       border: none;
-      border-radius: 5px;
-      font-size: 1rem;
-      margin-top: 20px;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      margin-top: 25px;
       cursor: pointer;
       text-decoration: none;
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background-color: #d62828;
     }
     section {
       padding: 60px 20px;
-      max-width: 1000px;
+      max-width: 1100px;
       margin: auto;
+    }
+    h2 {
+      text-align: center;
+      color: #d62828;
+      font-size: 2.2rem;
+      margin-bottom: 30px;
     }
     .highlight {
       display: flex;
       flex-wrap: wrap;
-      gap: 40px;
+      gap: 30px;
       justify-content: center;
-      text-align: center;
     }
-    .highlight div {
-      background-color: white;
-      padding: 30px;
+    .highlight-box {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 300px;
+      transition: transform 0.3s ease;
+    }
+    .highlight-box:hover {
+      transform: translateY(-5px);
+    }
+    .highlight-box img {
+      width: 100%;
       border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      width: 280px;
+      margin-bottom: 15px;
+    }
+    .highlight-box h3 {
+      color: #f77f00;
+      margin-bottom: 10px;
     }
     .qr-section {
       text-align: center;
       margin-top: 40px;
     }
+    .qr-section img {
+      border: 4px solid #e63946;
+      padding: 10px;
+      border-radius: 10px;
+    }
     footer {
       background-color: #222;
-      color: #aaa;
+      color: #ccc;
       text-align: center;
       padding: 20px;
+      font-size: 0.9rem;
     }
     @media (max-width: 768px) {
       header h1 {
-        font-size: 2rem;
+        font-size: 2.5rem;
       }
       .highlight {
         flex-direction: column;
+        align-items: center;
       }
     }
   </style>
@@ -84,40 +117,43 @@
 
 <header>
   <h1>Help for Helpless People</h1>
-  <p>Join us in making a difference. Your small contribution can bring a huge change in someone's life.</p>
+  <p>Your small act of kindness can bring light to someone’s dark world. Be the reason someone smiles today.</p>
   <a href="#donate" class="btn">Donate Now</a>
 </header>
 
 <section>
-  <h2 style="text-align:center;">Why Your Help Matters</h2>
+  <h2>Our Mission</h2>
   <div class="highlight">
-    <div>
+    <div class="highlight-box">
+      <img src="https://images.unsplash.com/photo-1580674283443-520fae337da3?auto=format&fit=crop&w=800&q=80" alt="Feeding the Poor">
       <h3>Feed the Hungry</h3>
-      <p>We provide daily meals to the homeless and hungry across cities.</p>
+      <p>We serve thousands of meals daily to people who are struggling for a simple bite.</p>
     </div>
-    <div>
-      <h3>Education for All</h3>
-      <p>Every child deserves a classroom. Help us send children to school.</p>
+    <div class="highlight-box">
+      <img src="https://images.unsplash.com/photo-1584467735871-4aa1cd3f1125?auto=format&fit=crop&w=800&q=80" alt="Education">
+      <h3>Education for Children</h3>
+      <p>Your donations support schools, books, and uniforms for underprivileged children.</p>
     </div>
-    <div>
-      <h3>Medical Assistance</h3>
-      <p>Emergency treatment and health kits for the helpless and poor.</p>
+    <div class="highlight-box">
+      <img src="https://images.unsplash.com/photo-1609916596054-18dc5a62a02e?auto=format&fit=crop&w=800&q=80" alt="Medical">
+      <h3>Emergency Care</h3>
+      <p>Free medical camps and aid for those who can’t afford critical treatment.</p>
     </div>
   </div>
 </section>
 
 <section id="donate">
-  <h2 style="text-align:center;">Make a Donation</h2>
-  <p style="text-align:center;">You can scan the QR code below or contact us directly to contribute.</p>
+  <h2>Make a Donation</h2>
+  <p style="text-align:center;">Support a cause that truly matters. Scan the QR below or reach out to us for bank transfer options.</p>
 
   <div class="qr-section">
-    <img src="YOUR_QR_CODE_IMAGE_URL_HERE" alt="Donate QR Code" width="200" height="200">
-    <p style="margin-top:10px;">Scan & Donate</p>
+    <img src="https://via.placeholder.com/200?text=QR+Code" alt="Donate QR Code" width="200" height="200">
+    <p style="margin-top:10px; color: #e63946;">Scan to Donate</p>
   </div>
 </section>
 
 <footer>
-  &copy; 2025 Help for Helpless People | Designed with ❤️
+  &copy; 2025 Help for Helpless People | Built with ❤️ for a better tomorrow
 </footer>
 
 </body>
