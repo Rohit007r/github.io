@@ -5,48 +5,61 @@
   <title>Data Collector Form</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f8f9fa;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
       padding: 40px;
-      text-align: center;
+      display: flex;
+      justify-content: center;
     }
     form {
       background: white;
-      padding: 25px;
+      padding: 30px;
       border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-      display: inline-block;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      width: 350px;
     }
-    input {
-      display: block;
-      margin: 10px auto;
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    input, textarea {
+      width: 100%;
       padding: 10px;
-      width: 250px;
-      font-size: 1rem;
-      border: 1px solid #ccc;
+      margin: 8px 0;
       border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    textarea {
+      resize: vertical;
     }
     button {
-      padding: 10px 25px;
+      width: 100%;
       background-color: #007bff;
-      border: none;
       color: white;
+      padding: 10px;
       font-size: 1rem;
+      border: none;
       border-radius: 5px;
       cursor: pointer;
     }
     #message {
-      margin-top: 20px;
+      margin-top: 15px;
       font-weight: bold;
+      color: green;
+      text-align: center;
     }
   </style>
 </head>
 <body>
 
-  <h2>Submit Your Details</h2>
   <form id="dataForm">
-    <input type="text" name="name" placeholder="Enter your name" required />
-    <input type="tel" name="mobile" placeholder="Enter your mobile number" required />
+    <h2>Submit Your Details</h2>
+    <input type="text" name="name" placeholder="Full Name" required />
+    <input type="tel" name="mobile" placeholder="10-digit Mobile Number" pattern="[0-9]{10}" required />
+    <input type="email" name="email" placeholder="Email Address" required />
+    <input type="text" name="city" placeholder="City" required />
+    <textarea name="message" rows="3" placeholder="Your Message (Optional)"></textarea>
     <button type="submit">Submit</button>
     <div id="message"></div>
   </form>
@@ -55,6 +68,7 @@
     const form = document.getElementById('dataForm');
     form.addEventListener('submit', async function(e) {
       e.preventDefault();
+
       const formData = new FormData(form);
       const params = new URLSearchParams(formData);
 
@@ -79,4 +93,3 @@
 
 </body>
 </html>
-
