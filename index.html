@@ -1,95 +1,76 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Data Collector Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HNIT Smart Help Bot</title>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f0f4f8;
-      padding: 40px;
-      display: flex;
-      justify-content: center;
-    }
-    form {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-      width: 350px;
-    }
-    h2 {
-      margin-bottom: 20px;
-      color: #333;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
-    }
-    textarea {
-      resize: vertical;
-    }
-    button {
-      width: 100%;
-      background-color: #007bff;
-      color: white;
-      padding: 10px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    #message {
-      margin-top: 15px;
-      font-weight: bold;
-      color: green;
-      text-align: center;
-    }
+    body { font-family: Arial, sans-serif; margin: 0; background: #f4f4f4; }
+    .chat-box { max-width: 800px; margin: auto; padding: 1rem; }
+    .bubble { padding: 10px 15px; border-radius: 15px; margin: 5px 0; max-width: 75%; line-height: 1.5; }
+    .user { background: #6366f1; color: white; align-self: flex-end; }
+    .bot { background: #e2e8f0; color: black; align-self: flex-start; }
+    .chat { display: flex; flex-direction: column; gap: 10px; }
+    .input-area { display: flex; justify-content: center; gap: 10px; padding: 1rem; }
+    input[type=text] { width: 70%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
+    button { padding: 10px 20px; border: none; background: #6366f1; color: white; border-radius: 8px; cursor: pointer; }
   </style>
 </head>
 <body>
-
-  <form id="dataForm">
-    <h2>Submit Your Details</h2>
-    <input type="text" name="name" placeholder="Full Name" required />
-    <input type="tel" name="mobile" placeholder="10-digit Mobile Number" pattern="[0-9]{10}" required />
-    <input type="email" name="email" placeholder="Email Address" required />
-    <input type="text" name="city" placeholder="City" required />
-    <textarea name="message" rows="3" placeholder="Your Message (Optional)"></textarea>
-    <button type="submit">Submit</button>
-    <div id="message"></div>
-  </form>
+  <div class="chat-box">
+    <h2>🤖 HNIT Smart Help Bot</h2>
+    <div id="chat" class="chat"></div>
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Type your IT issue..." />
+      <button onclick="getAnswer()">Send</button>
+    </div>
+  </div>
 
   <script>
-    const form = document.getElementById('dataForm');
-    form.addEventListener('submit', async function(e) {
-      e.preventDefault();
+    let data = {};
 
-      const formData = new FormData(form);
-      const params = new URLSearchParams(formData);
-
-      const scriptURL = 'https://script.google.com/macros/s/AKfycbzbrIgZPmfr1XLvKA_ZmXPmxaRWNFZST-45r8GxYID4znCo3cy0oRQ1BSMg4Wmzs6IS/exec';
-
-      try {
-        const response = await fetch(scriptURL, {
-          method: 'POST',
-          body: params
-        });
-
-        const result = await response.text();
-        document.getElementById('message').textContent = result;
-        document.getElementById('message').style.color = 'green';
-        form.reset();
-      } catch (error) {
-        document.getElementById('message').textContent = '❌ Error submitting form.';
-        document.getElementById('message').style.color = 'red';
+    async function loadCSV() {
+      const res = await fetch("https://raw.githubusercontent.com/Rohit007r/hnit-bot/main/hnit_chatbot_ready.csv");
+      const text = await res.text();
+      const lines = text.split('\n').slice(1);
+      for (const line of lines) {
+        const [q, ...rest] = line.split(',');
+        const a = rest.join(',').replace(/\\n/g, "\n");
+        if (q && a) data[q.trim().toLowerCase()] = a.trim();
       }
-    });
-  </script>
+    }
 
+    function renderBubble(text, sender = "bot") {
+      const chat = document.getElementById("chat");
+      const bubble = document.createElement("div");
+      bubble.className = "bubble " + sender;
+      bubble.innerText = text;
+      chat.appendChild(bubble);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    async function getAnswer() {
+      const input = document.getElementById("userInput");
+      const message = input.value.trim();
+      if (!message) return;
+      renderBubble(message, "user");
+      input.value = "";
+
+      const match = Object.keys(data).find(k => message.toLowerCase().includes(k));
+      if (match) {
+        renderBubble("🛠 Let's troubleshoot step by step:");
+        const steps = data[match].split("\n");
+        for (const step of steps) {
+          await new Promise(r => setTimeout(r, 500));
+          renderBubble(step);
+        }
+      } else {
+        renderBubble("❗ Sorry, I couldn't find a solution. Please contact IT Support.");
+      }
+    }
+
+    loadCSV();
+  </script>
 </body>
 </html>
